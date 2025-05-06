@@ -1,4 +1,5 @@
 import { useProjectStore } from "../state/projectStore";
+import DarkModeToggle from "./DarkModeToggle";
 
 interface HeaderProps {
   activeProject: string | null;
@@ -45,6 +46,8 @@ const Header = ({ activeProject }: HeaderProps) => {
           >
             📊
           </button>
+
+          <DarkModeToggle />
 
           <button
             className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"

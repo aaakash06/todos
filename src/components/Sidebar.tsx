@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useProjectStore } from "../state/projectStore";
+import AddProjectDialog from "../features/projects/AddProjectDialog";
 
 interface SidebarProps {
   activeProject: string | null;
@@ -9,6 +10,7 @@ interface SidebarProps {
 const Sidebar = ({ activeProject, setActiveProject }: SidebarProps) => {
   const { defaultProjects, projects } = useProjectStore();
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+  const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
 
   return (
     <aside className="w-64 h-full bg-gray-200 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 overflow-y-auto">
@@ -69,7 +71,10 @@ const Sidebar = ({ activeProject, setActiveProject }: SidebarProps) => {
                 ))}
 
               <li>
-                <button className="flex items-center w-full px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md text-left">
+                <button
+                  className="flex items-center w-full px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md text-left"
+                  onClick={() => setIsAddProjectDialogOpen(true)}
+                >
                   <span className="mr-2">+</span>
                   <span>Add Project</span>
                 </button>
@@ -78,6 +83,11 @@ const Sidebar = ({ activeProject, setActiveProject }: SidebarProps) => {
           )}
         </div>
       </div>
+
+      <AddProjectDialog
+        isOpen={isAddProjectDialogOpen}
+        onClose={() => setIsAddProjectDialogOpen(false)}
+      />
     </aside>
   );
 };
