@@ -1,23 +1,13 @@
 import { useState } from "react";
+import { useProjectStore } from "../state/projectStore";
 
 interface SidebarProps {
   activeProject: string | null;
-  setActiveProject: (projectId: string) => void;
+  setActiveProject: (projectId: string | null) => void;
 }
 
-const defaultProjects = [
-  { id: "inbox", name: "Inbox", icon: "📥" },
-  { id: "today", name: "Today", icon: "📅" },
-  { id: "upcoming", name: "Upcoming", icon: "📆" },
-];
-
-const userProjects = [
-  { id: "project1", name: "Work", icon: "💼" },
-  { id: "project2", name: "Personal", icon: "🏠" },
-  { id: "project3", name: "Shopping", icon: "🛒" },
-];
-
 const Sidebar = ({ activeProject, setActiveProject }: SidebarProps) => {
+  const { defaultProjects, projects } = useProjectStore();
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
 
   return (
@@ -60,21 +50,23 @@ const Sidebar = ({ activeProject, setActiveProject }: SidebarProps) => {
 
           {isProjectsExpanded && (
             <ul className="mt-1 space-y-1 pl-2">
-              {userProjects.map((project) => (
-                <li key={project.id}>
-                  <button
-                    className={`flex items-center w-full px-3 py-2 rounded-md text-left ${
-                      activeProject === project.id
-                        ? "bg-gray-300 dark:bg-gray-700"
-                        : "hover:bg-gray-300 dark:hover:bg-gray-700"
-                    }`}
-                    onClick={() => setActiveProject(project.id)}
-                  >
-                    <span className="mr-2">{project.icon}</span>
-                    <span>{project.name}</span>
-                  </button>
-                </li>
-              ))}
+              {projects
+                .filter((p) => !p.isArchived)
+                .map((project) => (
+                  <li key={project.id}>
+                    <button
+                      className={`flex items-center w-full px-3 py-2 rounded-md text-left ${
+                        activeProject === project.id
+                          ? "bg-gray-300 dark:bg-gray-700"
+                          : "hover:bg-gray-300 dark:hover:bg-gray-700"
+                      }`}
+                      onClick={() => setActiveProject(project.id)}
+                    >
+                      <span className="mr-2">{project.icon}</span>
+                      <span>{project.name}</span>
+                    </button>
+                  </li>
+                ))}
 
               <li>
                 <button className="flex items-center w-full px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md text-left">

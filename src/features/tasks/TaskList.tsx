@@ -1,54 +1,13 @@
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-  dueDate?: string;
-  priority: 1 | 2 | 3 | 4 | null;
-  projectId: string;
-}
+import { useTaskStore } from "../../state/taskStore";
+import type { Task } from "../../state/taskStore";
 
 interface TaskListProps {
   projectId: string | null;
 }
 
 const TaskList = ({ projectId }: TaskListProps) => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Complete project proposal",
-      completed: false,
-      dueDate: "2025-05-10",
-      priority: 1,
-      projectId: "project1",
-    },
-    {
-      id: "2",
-      title: "Buy groceries",
-      completed: false,
-      dueDate: "2025-05-08",
-      priority: 2,
-      projectId: "project3",
-    },
-    {
-      id: "3",
-      title: "Schedule doctor appointment",
-      completed: false,
-      dueDate: "2025-05-15",
-      priority: 3,
-      projectId: "project2",
-    },
-    {
-      id: "4",
-      title: "Review documentation",
-      completed: true,
-      priority: null,
-      projectId: "project1",
-    },
-  ]);
-
+  const { tasks, addTask, toggleTaskCompletion } = useTaskStore();
   const [newTaskTitle, setNewTaskTitle] = useState("");
 
   // Filter tasks based on selected project
@@ -72,33 +31,22 @@ const TaskList = ({ projectId }: TaskListProps) => {
       })
     : [];
 
-  // Toggle task completion
-  const toggleTaskCompletion = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
   // Add new task
-  const addTask = () => {
+  const handleAddTask = () => {
     if (newTaskTitle.trim() === "") return;
 
-    const newTask: Task = {
-      id: uuidv4(),
+    addTask({
       title: newTaskTitle,
       completed: false,
       priority: null,
       projectId: projectId || "inbox",
-    };
+    });
 
-    setTasks([...tasks, newTask]);
     setNewTaskTitle("");
   };
 
   // Get priority indicator
-  const getPriorityIndicator = (priority: 1 | 2 | 3 | 4 | null) => {
+  const getPriorityIndicator = (priority: Task["priority"]) => {
     switch (priority) {
       case 1:
         return <span className="text-red-500">⚑</span>;
@@ -121,12 +69,12 @@ const TaskList = ({ projectId }: TaskListProps) => {
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTask()}
+            onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
             placeholder="Add a task..."
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           <button
-            onClick={addTask}
+            onClick={handleAddTask}
             className="ml-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md"
           >
             Add
@@ -175,6 +123,19 @@ const TaskList = ({ projectId }: TaskListProps) => {
                 {task.dueDate && (
                   <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     📅 {new Date(task.dueDate).toLocaleDateString()}
+                  </div>
+                )}
+
+                {task.labels && task.labels.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {task.labels.map((label) => (
+                      <span
+                        key={label}
+                        className="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      >
+                        {label}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>

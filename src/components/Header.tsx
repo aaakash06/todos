@@ -1,26 +1,25 @@
+import { useProjectStore } from "../state/projectStore";
+
 interface HeaderProps {
   activeProject: string | null;
 }
 
 const Header = ({ activeProject }: HeaderProps) => {
+  const { projects, defaultProjects } = useProjectStore();
+
   // Function to get the project title
   const getProjectTitle = () => {
-    switch (activeProject) {
-      case "inbox":
-        return "📥 Inbox";
-      case "today":
-        return "📅 Today";
-      case "upcoming":
-        return "📆 Upcoming";
-      case "project1":
-        return "💼 Work";
-      case "project2":
-        return "🏠 Personal";
-      case "project3":
-        return "🛒 Shopping";
-      default:
-        return "Tasks";
-    }
+    if (!activeProject) return "Tasks";
+
+    // Check default projects
+    const defaultProject = defaultProjects.find((p) => p.id === activeProject);
+    if (defaultProject) return `${defaultProject.icon} ${defaultProject.name}`;
+
+    // Check user projects
+    const userProject = projects.find((p) => p.id === activeProject);
+    if (userProject) return `${userProject.icon} ${userProject.name}`;
+
+    return "Tasks";
   };
 
   return (
@@ -40,15 +39,24 @@ const Header = ({ activeProject }: HeaderProps) => {
             </div>
           </div>
 
-          <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+          <button
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            aria-label="View as board"
+          >
             📊
           </button>
 
-          <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+          <button
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            aria-label="Settings"
+          >
             ⚙️
           </button>
 
-          <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+          <button
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            aria-label="User profile"
+          >
             👤
           </button>
         </div>

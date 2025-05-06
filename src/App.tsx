@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Sidebar from "./components/Sidebar";
 import TaskList from "./features/tasks/TaskList";
 import Header from "./components/Header";
+import { useProjectStore } from "./state/projectStore";
 
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
-  const [activeProject, setActiveProject] = useState<string | null>("inbox");
+  const { activeProject, setActiveProject } = useProjectStore();
 
   return (
     <QueryClientProvider client={queryClient}>
